@@ -1,5 +1,7 @@
-import { Star } from "lucide-react";
+"use client";
+
 import Image from "next/image";
+import { Star, Clock, MapPin } from "lucide-react";
 import Link from "next/link";
 
 interface ServiceCardProps {
@@ -9,42 +11,62 @@ interface ServiceCardProps {
   rating: number;
   reviews: number;
   price: string;
-  deliveryTime?: string;
+  deliveryTime: string;
+  distance?: string;
 }
 
-export function ServiceCard({ id, image, title, rating, reviews, price, deliveryTime }: ServiceCardProps) {
+export function ServiceCard({
+  id,
+  image,
+  title,
+  rating,
+  reviews,
+  price,
+  deliveryTime,
+  distance
+}: ServiceCardProps) {
   return (
-    <Link href={"/service/" + id} className="block">
-        <div className="flex flex-col gap-2 cursor-pointer group w-full min-w-[200px]">
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-secondary/5">
-            <Image
+    <Link href={`/service/${id}`} className="group block">
+      <div className="flex flex-col bg-card rounded-3xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all hover:shadow-xl hover:shadow-primary/5 active:scale-[0.98]">
+        {/* Image Container */}
+        <div className="relative h-44 w-full overflow-hidden">
+          <Image
             src={image}
             alt={title}
             fill
-            className="object-cover transition-transform group-hover:scale-105"
-            />
-            {deliveryTime && (
-            <div className="absolute bottom-2 right-2 bg-background/90 px-2 py-1 rounded-full text-xs font-semibold shadow-sm backdrop-blur-sm">
-                {deliveryTime}
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <div className="absolute top-3 right-3 bg-background/80 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg">
+            <Star className="h-3.5 w-3.5 text-primary fill-primary" />
+            <span className="text-xs font-bold">{rating}</span>
+          </div>
+          {distance && (
+            <div className="absolute bottom-3 left-3 bg-primary px-3 py-1 rounded-full flex items-center gap-1 shadow-lg border border-white/20">
+              <MapPin className="h-3 w-3 text-white fill-white" />
+              <span className="text-[10px] font-black text-white uppercase tracking-tighter">{distance}</span>
             </div>
-            )}
+          )}
         </div>
-        <div className="flex flex-col gap-0.5">
-            <div className="flex justify-between items-start">
-            <h3 className="font-bold text-base truncate group-hover:text-primary transition-colors">{title}</h3>
-            <div className="bg-secondary/5 rounded-full h-6 w-6 flex items-center justify-center shrink-0">
-                <span className="text-[10px] font-bold text-secondary-foreground">{rating}</span>
+
+        {/* Content */}
+        <div className="p-4">
+          <div className="flex justify-between items-start mb-1">
+            <h3 className="font-extrabold text-lg text-foreground group-hover:text-primary transition-colors truncate pr-2">
+              {title}
+            </h3>
+            <span className="text-primary font-black text-sm">{price}</span>
+          </div>
+          
+          <div className="flex items-center gap-3 text-muted-foreground text-xs font-medium">
+            <div className="flex items-center gap-1 bg-secondary/10 px-2 py-1 rounded-md">
+                <Clock className="h-3 w-3" />
+                <span>{deliveryTime}</span>
             </div>
-            </div>
-            <div className="flex items-center text-sm text-muted-foreground gap-1">
-            <Star className="h-3 w-3 fill-primary text-primary" />
-            <span className="font-medium text-secondary-foreground">{rating}</span>
-            <span>({reviews}+)</span>
-            <span>•</span>
-            <span>{price}</span>
-            </div>
+            <span className="opacity-30">•</span>
+            <span>{reviews} reviews</span>
+          </div>
         </div>
-        </div>
+      </div>
     </Link>
   );
 }
