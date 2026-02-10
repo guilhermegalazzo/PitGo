@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, ChevronDown, Filter, Car, Wrench, SprayCan, Disc, Database, MapPin, Loader2, Navigation, User, Home, Sparkles } from "lucide-react";
+import { Search, ChevronDown, Filter, Car, Wrench, SprayCan, Disc, Database, MapPin, Loader2, Navigation, User, Home, Sparkles, MoreHorizontal } from "lucide-react";
 import { CategoryItem } from "@/components/CategoryItem";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
@@ -23,7 +23,7 @@ interface HomeClientProps {
 }
 
 export function HomeClient({ initialShops }: HomeClientProps) {
-  const [address, setAddress] = useState("Detecting location...");
+  const [address, setAddress] = useState("Locating...");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [shops, setShops] = useState<any[]>(initialShops);
@@ -61,62 +61,49 @@ export function HomeClient({ initialShops }: HomeClientProps) {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pb-20 bg-background text-foreground animate-in fade-in duration-500">
-      {/* Header Section */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md shadow-sm pb-2">
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-             <Logo />
-             <Link href="/account" className="hidden md:flex items-center gap-1.5 p-2 bg-secondary/10 rounded-xl hover:bg-secondary/20 transition-colors border border-border/50">
-                <User className="h-4 w-4 text-primary" />
-                <span className="text-xs font-bold text-foreground">My Account</span>
-             </Link>
-          </div>
+    <div className="flex flex-col min-h-screen pb-20 bg-[#F9F9FF] text-foreground animate-in fade-in duration-500">
+      {/* Header Section - Pill Style matching image */}
+      <header className="px-4 pt-6 pb-4">
+        <div className="bg-white rounded-[2.5rem] shadow-xl shadow-black/5 px-6 py-4 flex items-center justify-between border border-white">
+          <Logo className="h-8" />
           
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={handleSeed} title="Seed Database" className="hover:bg-primary/10">
-                <Database className="h-4 w-4 text-primary" />
-            </Button>
-            
-            <Link href="/account" className="md:hidden">
-                <Button variant="ghost" size="icon" className="hover:bg-primary/10 rounded-xl border border-border/50">
-                    <User className="h-5 w-5 text-primary" />
-                </Button>
-            </Link>
-
+          <div className="flex items-center gap-3">
             <div 
-              className="flex flex-col cursor-pointer group items-end"
+              className="flex items-center gap-2 cursor-pointer group"
               onClick={() => setShowLocationSearch(!showLocationSearch)}
             >
-                <div className="flex items-center gap-1 text-primary group-hover:opacity-80 transition-opacity">
-                    <Navigation className="h-2.5 w-2.5" />
-                    <span className="text-[10px] font-bold uppercase tracking-wide opacity-70">Current Location</span>
-                </div>
-                <div className="flex items-center gap-1 text-primary group-hover:opacity-80 transition-opacity">
-                    <span className="font-bold text-xs truncate max-w-[120px] text-foreground">
-                        {address === "Detecting location..." ? (
-                            <span className="animate-pulse">Locating...</span>
-                        ) : address}
-                    </span>
-                    <ChevronDown className="h-3 w-3" />
-                </div>
+                <Navigation className="h-4 w-4 text-primary" />
+                <span className="text-sm font-bold text-[#1A1A3D] truncate max-w-[100px]">
+                    {address}
+                </span>
+                <MoreHorizontal className="h-4 w-4 text-muted-foreground opacity-40" />
+            </div>
+            
+            {/* Action Buttons hidden in a clean way */}
+            <div className="flex items-center gap-2 border-l border-secondary/20 pl-3 ml-1">
+                <Link href="/account">
+                    <User className="h-5 w-5 text-[#1A1A3D] opacity-40 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Button variant="ghost" size="icon" onClick={handleSeed} className="h-8 w-8 text-primary/40 hover:text-primary">
+                    <Database className="h-4 w-4" />
+                </Button>
             </div>
           </div>
         </div>
         
         {showLocationSearch && (
-          <div className="px-4 pb-4 animate-in slide-in-from-top-2 duration-300">
+          <div className="mt-4 px-2 animate-in slide-in-from-top-2 duration-300">
             <LocationSearch 
               onLocationSelect={handleLocationSelect}
               placeholder="Where should we meet you?"
-              initialValue={address === "Detecting location..." ? "" : address}
+              initialValue={address === "Locating..." ? "" : address}
               autoDetect={true}
             />
           </div>
         )}
 
-        {/* This invisible Search is just to trigger autoDetect on mount if needed */}
-        {address === "Detecting location..." && !showLocationSearch && (
+        {/* Auto Detect Trigger */}
+        {address === "Locating..." && !showLocationSearch && (
             <div className="hidden">
                  <LocationSearch 
                     onLocationSelect={handleLocationSelect}
@@ -124,41 +111,28 @@ export function HomeClient({ initialShops }: HomeClientProps) {
                 />
             </div>
         )}
-
-        {!showLocationSearch && (
-          <div className="px-4 pb-2">
-              <div className="relative flex items-center bg-secondary/10 rounded-xl px-4 py-2 hover:bg-secondary/20 transition-all cursor-text border border-transparent focus-within:border-primary/30">
-                  <Home className="h-4 w-4 text-primary mr-2" />
-                  <input 
-                      type="text"
-                      placeholder="Service at your door..."
-                      className="bg-transparent border-none outline-none text-sm w-full placeholder:text-muted-foreground h-9"
-                  />
-                  <div className="bg-primary/10 px-2 py-1 rounded-md ml-2 flex items-center gap-1">
-                      <Sparkles className="h-3 w-3 text-primary animate-pulse" />
-                      <span className="text-[10px] font-black italic uppercase text-primary">Mobile</span>
-                  </div>
-              </div>
-          </div>
-        )}
       </header>
 
-      {/* Hero Banner / Highlight */}
-      {!loading && shops.length > 0 && !selectedCategory && (
-          <div className="px-4 py-2">
-              <div className="bg-gradient-to-br from-primary to-orange-600 p-6 rounded-[2rem] text-white shadow-xl shadow-primary/20 relative overflow-hidden">
+      {/* Hero Banner - Mobile Emphasis */}
+      {!loading && !selectedCategory && (
+          <div className="px-5 mb-4">
+              <div className="bg-gradient-to-br from-[#2D1A47] to-[#1A1A3D] p-6 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
                   <div className="relative z-10">
-                    <h3 className="text-2xl font-black italic tracking-tighter uppercase mb-1">We come to you!</h3>
-                    <p className="text-xs font-bold opacity-90 uppercase tracking-widest leading-none">On-demand car care at home or office.</p>
+                    <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">On-Demand fleet</span>
+                    </div>
+                    <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-1 leading-none">PITGO <br/>AT YOUR DOOR</h3>
+                    <p className="text-[10px] font-bold opacity-60 uppercase tracking-[0.1em] mt-3">Professional car care everywhere.</p>
                   </div>
-                  <Car className="absolute -right-6 -bottom-6 h-32 w-32 opacity-20 -rotate-12" />
+                  <Car className="absolute -right-8 -bottom-8 h-40 w-40 opacity-10 -rotate-12 group-hover:rotate-0 transition-transform duration-700" />
               </div>
           </div>
       )}
 
-      {/* Categories Scroll */}
-      <section className="py-4 overflow-x-auto no-scrollbar">
-        <div className="flex gap-4 px-4 min-w-max">
+      {/* Categories Grid - Matching mockup */}
+      <section className="py-6 px-4">
+        <div className="grid grid-cols-4 gap-4">
             {CATEGORIES.map((cat, i) => (
                 <div key={i} onClick={() => toggleCategory(cat.value)} className="cursor-pointer">
                     <CategoryItem icon={cat.icon} label={cat.label} isActive={selectedCategory === cat.value} />
@@ -168,13 +142,13 @@ export function HomeClient({ initialShops }: HomeClientProps) {
       </section>
 
       {/* Main Content */}
-      <main className="flex-1 px-4">
-        <div className="flex items-center justify-between mb-4">
-             <h2 className="text-xl font-extrabold tracking-tight">
-                {selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Specialists` : "Specialists Nearby"}
+      <main className="flex-1 px-5 pt-2">
+        <div className="flex items-center justify-between mb-6">
+             <h2 className="text-xl font-black italic tracking-tighter uppercase text-[#1A1A3D]">
+                {selectedCategory ? `${selectedCategory} fleet` : "Top Rated Nearby"}
              </h2>
-             <div className="bg-secondary/10 p-2 rounded-xl cursor-pointer hover:bg-secondary/20 transition-all border border-border/50">
-                <Filter className="h-4 w-4 text-foreground" />
+             <div className="bg-white p-2.5 rounded-2xl cursor-pointer hover:bg-secondary/10 transition-all shadow-sm border border-white">
+                <Filter className="h-4 w-4 text-[#1A1A3D]" />
              </div>
         </div>
         
@@ -200,17 +174,19 @@ export function HomeClient({ initialShops }: HomeClientProps) {
                     />
                 ))
             ) : (
-                <div className="text-center py-16 bg-secondary/5 rounded-[2.5rem] border border-dashed border-border/50 flex flex-col items-center px-8 shadow-inner">
-                    <MapPin className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                    <h3 className="text-lg font-bold mb-2">No mobile partners here yet</h3>
-                    <p className="text-sm text-muted-foreground mb-6">Our mobile fleet is expanding! Try searching in São Paulo for a live demo.</p>
+                <div className="text-center py-16 bg-white rounded-[3rem] border border-white flex flex-col items-center px-8 shadow-xl shadow-black-[0.02]">
+                    <MapPin className="h-12 w-12 text-primary/20 mb-4" />
+                    <h3 className="text-lg font-black uppercase italic tracking-tighter text-[#1A1A3D]">Out of service area</h3>
+                    <p className="text-xs text-muted-foreground mb-8 text-center max-w-[200px] leading-relaxed">
+                        We are currently deploying in São Paulo. Try the demo to see the magic.
+                    </p>
                     
-                    <div className="flex flex-col gap-2 w-full">
-                        <Button variant="outline" onClick={() => handleLocationSelect("Av. Paulista, São Paulo", -23.561414, -46.655881)} className="rounded-2xl border-primary/20 hover:bg-primary/5 text-primary font-bold">
+                    <div className="flex flex-col gap-3 w-full max-w-[200px]">
+                        <Button variant="default" onClick={() => handleLocationSelect("Av. Paulista, São Paulo", -23.561414, -46.655881)} className="rounded-2xl h-12 shadow-lg shadow-primary/20 font-bold uppercase tracking-widest text-[10px]">
                             Try São Paulo Demo
                         </Button>
-                        <Button variant="link" onClick={() => {setSelectedCategory(null); setCoordinates(null); setAddress("Discovery Mode");}} className="text-muted-foreground text-xs uppercase font-black tracking-widest">
-                            Show all registered shops
+                        <Button variant="ghost" onClick={() => {setSelectedCategory(null); setCoordinates(null); setAddress("All Shops");}} className="text-[#1A1A3D]/40 text-[10px] uppercase font-black tracking-widest h-10">
+                            Clear Filters
                         </Button>
                     </div>
                 </div>
