@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 export async function getShops(category?: string, userCoords?: { lat: number; lng: number }) {
   try {
@@ -79,6 +80,70 @@ export async function getShopById(id: string) {
   }
 }
 
+export async function registerProvider(formData: {
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  radiusMeters: number;
+  categories: string[];
+}) {
+  try {
+    const supabase = await createClient();
+    if (!supabase) throw new Error("Configuration error");
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    // 1. Create or Update Shop
+    const { data: shop, error: shopError } = await supabase
+      .from("shops")
+      .insert([
+        {
+          owner_id: user.id,
+          name: formData.name,
+          address: formData.address,
+          latitude: formData.lat,
+          longitude: formData.lng,
+          service_radius_km: Math.round(formData.radiusMeters / 1000),
+          category: formData.categories[0] || 'wash', // Primary category
+          is_active: true
+        }
+      ])
+      .select()
+      .single();
+
+    if (shopError) throw shopError;
+
+    // 2. Add sample services based on categories
+    if (formData.categories.length > 0) {
+        const servicesToInsert = formData.categories.map(cat => ({
+            shop_id: shop.id,
+            title: `Mobile ${cat.charAt(0).toUpperCase() + cat.slice(1)}`,
+            price: 50,
+            duration_mins: 45
+        }));
+        await supabase.from("services").insert(servicesToInsert);
+    }
+
+    // 3. Upgrade user role
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({ role: "provider" })
+      .eq("id", user.id);
+
+    if (profileError) console.error("Profile role update failed:", profileError);
+
+    revalidatePath("/account");
+    revalidatePath("/");
+    
+    return { success: true, shopId: shop.id };
+  } catch (error: any) {
+    console.error("Registration error:", error);
+    return { error: error.message };
+  }
+}
+
 export async function seedDatabase() {
   try {
     const supabase = await createClient();
@@ -89,7 +154,7 @@ export async function seedDatabase() {
 
     const { data: shops, error: shopError } = await supabase.from("shops").insert([
       {
-        name: "Elite Car Wash",
+        name: "Eco Mobile Wash",
         category: "wash",
         rating: 4.8,
         address: "Av. Paulista, 1000 - São Paulo, SP",
@@ -99,7 +164,7 @@ export async function seedDatabase() {
         service_radius_km: 15
       },
       {
-        name: "Detailing Pro",
+        name: "Home Detailer Pro",
         category: "detailing",
         rating: 4.9,
         address: "Rua Augusta, 500 - São Paulo, SP",
@@ -109,7 +174,7 @@ export async function seedDatabase() {
         service_radius_km: 10
       },
       {
-        name: "Speed Tire Shop",
+        name: "Quick Tire Support",
         category: "repair",
         rating: 4.7,
         address: "Beco do Batman - São Paulo, SP",

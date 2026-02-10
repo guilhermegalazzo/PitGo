@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Star, Clock, MapPin } from "lucide-react";
+import { Star, Clock, MapPin, Home } from "lucide-react";
 import Link from "next/link";
 
 interface ServiceCardProps {
@@ -31,7 +31,7 @@ export function ServiceCard({
         {/* Image Container */}
         <div className="relative h-44 w-full overflow-hidden">
           <Image
-            src={image}
+            src={image || "https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=2070&auto=format&fit=crop"}
             alt={title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -40,12 +40,19 @@ export function ServiceCard({
             <Star className="h-3.5 w-3.5 text-primary fill-primary" />
             <span className="text-xs font-bold">{rating}</span>
           </div>
-          {distance && (
-            <div className="absolute bottom-3 left-3 bg-primary px-3 py-1 rounded-full flex items-center gap-1 shadow-lg border border-white/20">
-              <MapPin className="h-3 w-3 text-white fill-white" />
-              <span className="text-[10px] font-black text-white uppercase tracking-tighter">{distance}</span>
+          
+          <div className="absolute bottom-3 left-3 flex gap-2">
+            {distance && (
+              <div className="bg-primary px-3 py-1 rounded-full flex items-center gap-1 shadow-lg border border-white/20">
+                <MapPin className="h-3 w-3 text-white fill-white" />
+                <span className="text-[10px] font-black text-white uppercase tracking-tighter">{distance}</span>
+              </div>
+            )}
+            <div className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 shadow-lg border border-white/10">
+              <Home className="h-3 w-3 text-white" />
+              <span className="text-[10px] font-black text-white uppercase tracking-tighter">At Home</span>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Content */}
@@ -60,7 +67,7 @@ export function ServiceCard({
           <div className="flex items-center gap-3 text-muted-foreground text-xs font-medium">
             <div className="flex items-center gap-1 bg-secondary/10 px-2 py-1 rounded-md">
                 <Clock className="h-3 w-3" />
-                <span>{deliveryTime}</span>
+                <span>Starts in {deliveryTime}</span>
             </div>
             <span className="opacity-30">•</span>
             <span>{reviews} reviews</span>
