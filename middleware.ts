@@ -9,15 +9,15 @@ export async function middleware(request: NextRequest) {
   // Skip middleware for static assets, images, etc.
   if (
     request.nextUrl.pathname.startsWith('/_next') ||
-    request.nextUrl.pathname.includes('.') || 
+    request.nextUrl.pathname.includes('.') ||
     request.nextUrl.pathname === '/favicon.ico'
   ) {
     return supabaseResponse;
   }
 
   try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseUrl = "https://zotruzuokkvbpekiqvxd.supabase.co";
+    const supabaseAnonKey = "sb_publishable_nlAIs5ltpgwOvlY2JXwFVQ_UVslba81";
 
     if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === "your-supabase-url") {
       return supabaseResponse;
@@ -49,15 +49,15 @@ export async function middleware(request: NextRequest) {
     const isAuthRoute = authRoutes.some(route => request.nextUrl.pathname.startsWith(route));
 
     if (isAuthRoute) {
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) {
-            const url = request.nextUrl.clone()
-            url.pathname = '/login'
-            return NextResponse.redirect(url)
-        }
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/login'
+        return NextResponse.redirect(url)
+      }
     } else {
-        // Just refresh the session in the background for other routes
-        await supabase.auth.getSession();
+      // Just refresh the session in the background for other routes
+      await supabase.auth.getSession();
     }
 
   } catch (error) {

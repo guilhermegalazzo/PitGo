@@ -1,9 +1,9 @@
 import { createBrowserClient } from '@supabase/ssr'
 
 export function createClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  
+  const supabaseUrl = "https://zotruzuokkvbpekiqvxd.supabase.co";
+  const supabaseAnonKey = "sb_publishable_nlAIs5ltpgwOvlY2JXwFVQ_UVslba81";
+
   return createBrowserClient(
     supabaseUrl,
     supabaseAnonKey

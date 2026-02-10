@@ -4,8 +4,8 @@ import { cookies } from 'next/headers'
 export async function createClient() {
   const cookieStore = await cookies()
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = "https://zotruzuokkvbpekiqvxd.supabase.co";
+  const supabaseAnonKey = "sb_publishable_nlAIs5ltpgwOvlY2JXwFVQ_UVslba81";
 
   if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === "your-supabase-url") {
     // Return a dummy client or null to be handled by caller
