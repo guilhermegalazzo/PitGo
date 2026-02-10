@@ -4,7 +4,7 @@ import { useState } from "react";
 import { login, signup } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
-import { Loader2, Mail } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -16,18 +16,27 @@ export default function LoginPage() {
     setLoading(true);
     setMessage(null);
     
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
+    try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
 
-    const result = isSignup ? await signup(formData) : await login(formData);
+      const result = isSignup ? await signup(formData) : await login(formData);
 
-    if (result?.error) {
-      setMessage({ type: 'error', text: result.error });
-    } else if (isSignup) {
-      setMessage({ type: 'success', text: "Check your email to confirm the signup!" });
+      if (result?.error) {
+        setMessage({ type: 'error', text: result.error });
+        setLoading(false);
+      } else if (isSignup) {
+        setMessage({ type: 'success', text: "Check your email to confirm the signup!" });
+        setLoading(false);
+      }
+      // If it's a successful login, Next.js will handle the redirect 
+      // and we don't need to manually set loading to false as the page will change.
+    } catch (err: any) {
+      // Catch unexpected errors (like network failures)
+      setMessage({ type: 'error', text: "An unexpected error occurred. Please try again." });
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -65,14 +74,14 @@ export default function LoginPage() {
             </div>
             
             {message && (
-                <div className={`p-4 rounded-xl text-sm font-medium ${message.type === 'error' ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary'}`}>
+                <div className={`p-4 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-300 ${message.type === 'error' ? 'bg-destructive/10 text-destructive border border-destructive/20' : 'bg-primary/10 text-primary border border-primary/20'}`}>
                     {message.text}
                 </div>
             )}
 
             <div className="flex flex-col gap-3">
                 <Button 
-                    className="w-full h-12 font-bold text-lg" 
+                    className="w-full h-12 font-bold text-lg rounded-xl shadow-lg shadow-primary/20" 
                     onClick={() => handleAuth(false)}
                     disabled={loading || !email || !password}
                 >
@@ -80,7 +89,7 @@ export default function LoginPage() {
                 </Button>
                 <Button 
                     variant="outline" 
-                    className="w-full h-12 font-bold"
+                    className="w-full h-12 font-bold rounded-xl border-border"
                     onClick={() => handleAuth(true)}
                     disabled={loading || !email || !password}
                 >
