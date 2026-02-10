@@ -65,3 +65,8 @@ CREATE POLICY "Public shops are viewable by everyone" ON shops FOR SELECT USING 
 CREATE POLICY "Public services are viewable by everyone" ON services FOR SELECT USING (true);
 CREATE POLICY "Users can view their own profile" ON profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can view their own orders" ON orders FOR SELECT USING (auth.uid() = customer_id);
+
+-- Update profiles for customer location
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_lat DECIMAL(9,6);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_lng DECIMAL(9,6);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_address TEXT;

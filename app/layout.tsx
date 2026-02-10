@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { GoogleMapsProvider } from "@/components/maps/GoogleMapsProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,10 +49,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-primary/20`}
       >
-        <main className="max-w-md mx-auto bg-background min-h-screen relative shadow-2xl sm:border-x border-border">
-          {children}
-          <BottomNav />
-        </main>
+        <GoogleMapsProvider>
+            <main className="max-w-md mx-auto bg-background min-h-screen relative shadow-2xl sm:border-x border-border">
+            {children}
+            <BottomNav />
+            </main>
+        </GoogleMapsProvider>
       </body>
     </html>
   );
