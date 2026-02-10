@@ -2,30 +2,68 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
-import { Search, MapPin, Loader2 } from "lucide-react";
+import { Search, MapPin, Loader2, Navigation } from "lucide-react";
 
 interface LocationSearchProps {
   onLocationSelect: (address: string, lat: number, lng: number) => void;
   placeholder?: string;
   initialValue?: string;
+  autoDetect?: boolean;
 }
 
-export function LocationSearch({ onLocationSelect, placeholder, initialValue }: LocationSearchProps) {
+export function LocationSearch({ onLocationSelect, placeholder, initialValue, autoDetect }: LocationSearchProps) {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
   const [loading, setLoading] = useState(false);
+  const [detecting, setDetecting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const placesLibrary = useMapsLibrary("places");
+  const geocodingLibrary = useMapsLibrary("geocoding");
   const autoCompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
   const placesService = useRef<google.maps.places.PlacesService | null>(null);
 
   useEffect(() => {
     if (!placesLibrary) return;
     autoCompleteService.current = new placesLibrary.AutocompleteService();
-    // Dummy div for places service
     const dummyDiv = document.createElement("div");
     placesService.current = new placesLibrary.PlacesService(dummyDiv);
   }, [placesLibrary]);
+
+  useEffect(() => {
+    if (autoDetect && !initialValue) {
+      handleDetectLocation();
+    }
+  }, [autoDetect, geocodingLibrary]);
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      console.error("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        if (geocodingLibrary) {
+          const geocoder = new geocodingLibrary.Geocoder();
+          geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
+            setDetecting(false);
+            if (status === "OK" && results && results[0]) {
+              const address = results[0].formatted_address;
+              setInputValue(address);
+              onLocationSelect(address, latitude, longitude);
+            }
+          });
+        }
+      },
+      (error) => {
+        setDetecting(false);
+        console.error("Error detecting location:", error);
+      }
+    );
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -75,17 +113,28 @@ export function LocationSearch({ onLocationSelect, placeholder, initialValue }: 
 
   return (
     <div className="relative w-full">
-      <div className="relative flex items-center bg-secondary/5 rounded-full px-4 py-2 hover:bg-secondary/10 transition-colors">
-        <MapPin className="h-4 w-4 text-primary mr-2" />
+      <div className="relative flex items-center bg-secondary/5 rounded-2xl px-4 py-2 hover:bg-secondary/10 transition-colors border border-border/50">
+        <MapPin className="h-4 w-4 text-primary mr-2 shrink-0" />
         <input
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           placeholder={placeholder || "Enter your address..."}
-          className="bg-transparent border-none outline-none text-sm w-full placeholder:text-muted-foreground h-8"
+          className="bg-transparent border-none outline-none text-sm w-full placeholder:text-muted-foreground h-10"
           onFocus={() => inputValue && predictions.length > 0 && setIsOpen(true)}
         />
-        {loading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground ml-2" />}
+        <button 
+          onClick={handleDetectLocation}
+          className="ml-2 p-2 hover:bg-primary/10 rounded-xl transition-colors text-primary"
+          title="Detect my location"
+          disabled={detecting}
+        >
+          {detecting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Navigation className="h-4 w-4" />
+          )}
+        </button>
       </div>
 
       {isOpen && predictions.length > 0 && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, ChevronDown, Filter, Car, Wrench, SprayCan, Disc, Database, MapPin, Loader2 } from "lucide-react";
+import { Search, ChevronDown, Filter, Car, Wrench, SprayCan, Disc, Database, MapPin, Loader2, Navigation } from "lucide-react";
 import { CategoryItem } from "@/components/CategoryItem";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
@@ -22,7 +22,7 @@ interface HomeClientProps {
 }
 
 export function HomeClient({ initialShops }: HomeClientProps) {
-  const [address, setAddress] = useState("San Francisco, CA");
+  const [address, setAddress] = useState("Detecting location...");
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [shops, setShops] = useState<any[]>(initialShops);
@@ -60,7 +60,7 @@ export function HomeClient({ initialShops }: HomeClientProps) {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pb-20 bg-background text-foreground">
+    <div className="flex flex-col min-h-screen pb-20 bg-background text-foreground animate-in fade-in duration-500">
       {/* Header Section */}
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md shadow-sm pb-2">
         <div className="px-4 py-3 flex items-center justify-between">
@@ -73,9 +73,16 @@ export function HomeClient({ initialShops }: HomeClientProps) {
               className="flex flex-col cursor-pointer group items-end"
               onClick={() => setShowLocationSearch(!showLocationSearch)}
             >
-                <span className="text-[10px] text-primary font-bold uppercase tracking-wide opacity-70">Delivery to</span>
                 <div className="flex items-center gap-1 text-primary group-hover:opacity-80 transition-opacity">
-                    <span className="font-bold text-xs truncate max-w-[120px] text-foreground">{address}</span>
+                    <Navigation className="h-2.5 w-2.5" />
+                    <span className="text-[10px] font-bold uppercase tracking-wide opacity-70">Current Location</span>
+                </div>
+                <div className="flex items-center gap-1 text-primary group-hover:opacity-80 transition-opacity">
+                    <span className="font-bold text-xs truncate max-w-[150px] text-foreground">
+                        {address === "Detecting location..." ? (
+                            <span className="animate-pulse">Locating...</span>
+                        ) : address}
+                    </span>
                     <ChevronDown className="h-3 w-3" />
                 </div>
             </div>
@@ -87,9 +94,20 @@ export function HomeClient({ initialShops }: HomeClientProps) {
             <LocationSearch 
               onLocationSelect={handleLocationSelect}
               placeholder="Where are you located?"
-              initialValue={address === "San Francisco, CA" ? "" : address}
+              initialValue={address === "Detecting location..." ? "" : address}
+              autoDetect={true}
             />
           </div>
+        )}
+
+        {/* This invisible Search is just to trigger autoDetect on mount if needed */}
+        {address === "Detecting location..." && !showLocationSearch && (
+            <div className="hidden">
+                 <LocationSearch 
+                    onLocationSelect={handleLocationSelect}
+                    autoDetect={true}
+                />
+            </div>
         )}
 
         {!showLocationSearch && (
@@ -130,9 +148,10 @@ export function HomeClient({ initialShops }: HomeClientProps) {
         
         <div className="flex flex-col gap-6 pb-6">
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground space-y-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm font-medium">Scanning local partners...</p>
+                <div className="flex flex-col gap-6">
+                    {[1, 2, 3].map((i) => (
+                        <ServiceCardSkeleton key={i} />
+                    ))}
                 </div>
             ) : shops.length > 0 ? (
                 shops.map((shop) => (
