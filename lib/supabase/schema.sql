@@ -70,3 +70,7 @@ CREATE POLICY "Users can view their own orders" ON orders FOR SELECT USING (auth
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_lat DECIMAL(9,6);
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_lng DECIMAL(9,6);
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS last_address TEXT;
+
+-- Additional Policies for Profiles
+CREATE POLICY "Users can insert their own profile" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Users can update their own profile" ON profiles FOR UPDATE USING (auth.uid() = id);

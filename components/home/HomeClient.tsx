@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, ChevronDown, Filter, Car, Wrench, SprayCan, Disc, Database, MapPin, Loader2, Navigation } from "lucide-react";
+import { Search, ChevronDown, Filter, Car, Wrench, SprayCan, Disc, Database, MapPin, Loader2, Navigation, User } from "lucide-react";
 import { CategoryItem } from "@/components/CategoryItem";
 import { ServiceCard } from "@/components/ServiceCard";
 import { ServiceCardSkeleton } from "@/components/ServiceCardSkeleton";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { getShops, seedDatabase } from "@/app/actions/shops";
 import { LocationSearch } from "@/components/maps/LocationSearch";
+import Link from "next/link";
 
 const CATEGORIES = [
   { label: "Wash", value: "wash", icon: Car },
@@ -64,11 +65,25 @@ export function HomeClient({ initialShops }: HomeClientProps) {
       {/* Header Section */}
       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md shadow-sm pb-2">
         <div className="px-4 py-3 flex items-center justify-between">
-          <Logo />
+          <div className="flex items-center gap-3">
+             <Logo />
+             <Link href="/account" className="hidden md:flex items-center gap-1.5 p-2 bg-secondary/10 rounded-xl hover:bg-secondary/20 transition-colors">
+                <User className="h-4 w-4 text-primary" />
+                <span className="text-xs font-bold text-foreground">My Account</span>
+             </Link>
+          </div>
+          
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={handleSeed} title="Seed Database" className="hover:bg-primary/10">
                 <Database className="h-4 w-4 text-primary" />
             </Button>
+            
+            <Link href="/account" className="md:hidden">
+                <Button variant="ghost" size="icon" className="hover:bg-primary/10 rounded-xl">
+                    <User className="h-5 w-5 text-primary" />
+                </Button>
+            </Link>
+
             <div 
               className="flex flex-col cursor-pointer group items-end"
               onClick={() => setShowLocationSearch(!showLocationSearch)}
