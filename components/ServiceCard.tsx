@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface ServiceCardProps {
+  id: string;
   image: string;
   title: string;
   rating: number;
@@ -11,12 +12,9 @@ interface ServiceCardProps {
   deliveryTime?: string;
 }
 
-export function ServiceCard({ image, title, rating, reviews, price, deliveryTime }: ServiceCardProps) {
-  // Mock ID generation for prototype
-  const id = title.toLowerCase().replace(/\s+/g, '-');
-  
+export function ServiceCard({ id, image, title, rating, reviews, price, deliveryTime }: ServiceCardProps) {
   return (
-    <Link href={`/service/${id}`} className="block">
+    <Link href={"/service/" + id} className="block">
         <div className="flex flex-col gap-2 cursor-pointer group w-full min-w-[200px]">
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-secondary/5">
             <Image
@@ -39,8 +37,8 @@ export function ServiceCard({ image, title, rating, reviews, price, deliveryTime
             </div>
             </div>
             <div className="flex items-center text-sm text-muted-foreground gap-1">
-            <span className="font-medium text-secondary-foreground">{rating}</span>
             <Star className="h-3 w-3 fill-primary text-primary" />
+            <span className="font-medium text-secondary-foreground">{rating}</span>
             <span>({reviews}+)</span>
             <span>•</span>
             <span>{price}</span>
