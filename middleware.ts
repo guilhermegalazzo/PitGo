@@ -6,13 +6,20 @@ export async function middleware(request: NextRequest) {
     request,
   })
 
+  // Skip middleware for static assets, images, etc.
+  if (
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.includes('.') || 
+    request.nextUrl.pathname === '/favicon.ico'
+  ) {
+    return supabaseResponse;
+  }
+
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    // Safety check: Avoid calling createServerClient if variables are null or empty
     if (!supabaseUrl || !supabaseAnonKey || supabaseUrl === "your-supabase-url") {
-      console.error("MIDDLEWARE_ERROR: NEXT_PUBLIC_SUPABASE_URL or ANON_KEY is missing/invalid.");
       return supabaseResponse;
     }
 
@@ -37,12 +44,23 @@ export async function middleware(request: NextRequest) {
       }
     )
 
-    // Verify session
-    await supabase.auth.getUser()
+    // IMPORTANT: Only check user session for authenticated routes
+    const authRoutes = ['/account', '/orders', '/provider', '/admin'];
+    const isAuthRoute = authRoutes.some(route => request.nextUrl.pathname.startsWith(route));
+
+    if (isAuthRoute) {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/login'
+            return NextResponse.redirect(url)
+        }
+    } else {
+        // Just refresh the session in the background for other routes
+        await supabase.auth.getSession();
+    }
 
   } catch (error) {
-    console.error("MIDDLEWARE_CRITICAL_EXCEPTION:", error);
-    // Even if middleware fails, we want the page to load (it might fail later but won't block the whole app)
     return supabaseResponse;
   }
 
@@ -51,13 +69,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - api routes (optional: if you want to skip auth check for webhooks)
-     */
     '/((?!_next/static|_next/image|favicon.ico|api/webhooks|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
