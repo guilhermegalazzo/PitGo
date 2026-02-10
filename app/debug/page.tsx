@@ -1,25 +1,14 @@
-"use client";
-
-import { useEffect, useState } from "react";
 
 export default function DebugPage() {
-    const [envInfo, setEnvInfo] = useState<string>("Loading...");
-
-    useEffect(() => {
-        const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-        setEnvInfo(`
-      Supabase URL: ${url ? url.substring(0, 15) + "..." : "MISSING"}
-      Supabase Key: ${key ? "PRESENT" : "MISSING"}
-      App URL: ${process.env.NEXT_PUBLIC_APP_URL || "MISSING"}
-    `);
-    }, []);
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     return (
-        <div className="p-10 font-mono whitespace-pre-wrap bg-white text-black min-h-screen">
-            <h1 className="text-xl font-bold mb-4">Environment Debug</h1>
-            {envInfo}
+        <div style={{ padding: 40, fontFamily: 'monospace' }}>
+            <h1>Debug Server Side</h1>
+            <p><strong>Supabase URL:</strong> {url || "MISSING"}</p>
+            <p><strong>Supabase Key:</strong> {key ? "PRESENT (Hidden)" : "MISSING"}</p>
+            <p><strong>App URL:</strong> {process.env.NEXT_PUBLIC_APP_URL || "MISSING"}</p>
         </div>
     );
 }
