@@ -2,53 +2,50 @@
 
 export function Logo({ className = "h-8" }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-1.5 ${className}`}>
+    <div className={`flex items-center gap-2 ${className}`}>
       <div className="relative flex items-center justify-center">
-        {/* Subtle white aura around the hexagon */}
-        <div className="absolute inset-0 bg-white/60 blur-lg rounded-full scale-110" />
+        {/* Deep Glow Effect */}
+        <div className="absolute inset-0 bg-[#FF7A00]/20 blur-xl rounded-full scale-150" />
         
         <svg
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-9 w-auto relative z-10 drop-shadow-[0_4px_8px_rgba(0,0,0,0.15)]"
+          className="h-10 w-auto relative z-10 drop-shadow-[0_0_15px_rgba(255,122,0,0.5)]"
         >
-          {/* Hexagonal Nut Shape - Deep Purple (#2D1A47) */}
+          {/* Hexagonal Nut - High Contrast Dark Purple (#1A1A3D) */}
           <path
             d="M50 5L90 25V75L50 95L10 75V25L50 5Z"
-            fill="#2D1A47"
+            fill="#1A1A3D"
+            stroke="#412763"
+            strokeWidth="2"
           />
           
-          {/* Internal Gradient for Depth */}
           <defs>
-            <linearGradient id="innerGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#412763" />
-              <stop offset="100%" stopColor="#2D1A47" />
-            </linearGradient>
-            <linearGradient id="boltGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FFE066" />
+            <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFF280" />
               <stop offset="100%" stopColor="#FF7A00" />
             </linearGradient>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
           </defs>
-          
-          <path
-            d="M52 10L86 27V73L52 90L18 73V27L52 10Z"
-            fill="url(#innerGlow)"
-            opacity="0.5"
-          />
 
-          {/* Speed Flash / Lighting Bolt - Custom Shape from image */}
+          {/* Sharp Bolt - Matching the image's aggressive angle */}
           <path
-            d="M65 24L35 52H52L40 82L75 48H58L70 24Z"
-            fill="url(#boltGradient)"
+            d="M65 22L35 52H52L40 82L75 48H58L70 22Z"
+            fill="url(#boltGrad)"
+            filter="url(#glow)"
           />
         </svg>
       </div>
-      
-      {/* "PIT" in Deep Purple/Navy, "GO" in Brand Orange - matching image font weight */}
-      <span className="text-2xl font-black italic tracking-tighter text-[#1A1A3D] flex items-center">
-        PIT<span className="text-[#FF7A00] ml-0.5">GO</span>
-      </span>
+      <div className="flex flex-col -gap-1 ml-1">
+        <span className="text-3xl font-black italic tracking-tighter text-white uppercase leading-none">
+          PIT<span className="text-[#FF7A00]">GO</span>
+        </span>
+        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#FF7A00]/60 -mt-0.5 ml-0.5">Automotive</span>
+      </div>
     </div>
   );
 }

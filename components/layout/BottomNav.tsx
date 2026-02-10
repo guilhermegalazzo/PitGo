@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, Receipt, User } from "lucide-react";
+import { Home, Receipt, User, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,19 +10,22 @@ export function BottomNav() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-3 px-6 md:hidden z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#0D0D1F]/90 backdrop-blur-2xl border-t border-white/5 py-3 px-8 md:hidden z-50">
       <div className="flex justify-between items-center max-w-sm mx-auto">
-        <Link href="/" className={`flex flex-col items-center gap-1 ${isActive("/") ? "text-primary" : "text-muted-foreground"}`}>
-          <Home className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Home</span>
+        <Link href="/" className={`flex flex-col items-center gap-1.5 transition-all ${isActive("/") ? "text-primary scale-110" : "text-white/30"}`}>
+          <Home className="h-5 w-5" />
+          <span className="text-[9px] font-black uppercase tracking-[0.15em]">Fleet</span>
+          {isActive("/") && <div className="h-1 w-1 bg-primary rounded-full mt-0.5 shadow-sm shadow-primary/50" />}
         </Link>
-        <Link href="/orders" className={`flex flex-col items-center gap-1 ${isActive("/orders") ? "text-primary" : "text-muted-foreground"}`}>
-          <Receipt className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Orders</span>
+        <Link href="/orders" className={`flex flex-col items-center gap-1.5 transition-all ${isActive("/orders") ? "text-primary scale-110" : "text-white/30"}`}>
+          <Receipt className="h-5 w-5" />
+          <span className="text-[9px] font-black uppercase tracking-[0.15em]">Orders</span>
+          {isActive("/orders") && <div className="h-1 w-1 bg-primary rounded-full mt-0.5 shadow-sm shadow-primary/50" />}
         </Link>
-        <Link href="/account" className={`flex flex-col items-center gap-1 ${isActive("/account") ? "text-primary" : "text-muted-foreground"}`}>
-          <User className="h-6 w-6" />
-          <span className="text-[10px] font-medium">Account</span>
+        <Link href="/account" className={`flex flex-col items-center gap-1.5 transition-all ${isActive("/account") ? "text-primary scale-110" : "text-white/30"}`}>
+          <User className="h-5 w-5" />
+          <span className="text-[9px] font-black uppercase tracking-[0.15em]">Driver</span>
+          {isActive("/account") && <div className="h-1 w-1 bg-primary rounded-full mt-0.5 shadow-sm shadow-primary/50" />}
         </Link>
       </div>
     </div>

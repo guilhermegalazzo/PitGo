@@ -10,39 +10,35 @@ interface CategoryItemProps {
 
 export function CategoryItem({ icon: Icon, label, isActive }: CategoryItemProps) {
   return (
-    <div className="flex flex-col items-center gap-2 group transition-all">
+    <div className="flex flex-col items-center gap-3 group transition-all">
       <div 
         className={`
-          w-20 h-20 rounded-[1.75rem] flex items-center justify-center transition-all duration-500 relative overflow-hidden
+          w-full aspect-square rounded-[2rem] flex items-center justify-center transition-all duration-500 relative overflow-hidden border-2
           ${isActive 
-            ? "bg-white shadow-2xl shadow-primary/20 scale-105 border-2 border-primary/20" 
-            : "bg-white border border-secondary/5 shadow-lg shadow-black/[0.03] hover:shadow-xl hover:scale-110"
+            ? "bg-primary border-primary shadow-[0_0_30px_rgba(255,122,0,0.4)] scale-110" 
+            : "bg-[#16162E] border-white/5 shadow-2xl hover:border-primary/40 hover:scale-105"
           }
         `}
       >
-        {/* Background icon decoration as seen in design */}
-        <Icon 
-            className={`
-                h-16 w-16 absolute -top-4 -right-4 opacity-[0.05] -rotate-12 transition-transform duration-700
-                ${isActive ? "text-primary scale-125" : "text-[#1A1A3D]"}
-            `} 
-            strokeWidth={1}
-        />
+        {/* Background Graphic */}
+        <div className={`absolute inset-0 opacity-[0.03] transition-opacity ${isActive ? "opacity-[0.1]" : "group-hover:opacity-[0.1]"}`}>
+            <Icon className="h-full w-full scale-150 rotate-12" strokeWidth={1} />
+        </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col items-center">
             <Icon 
                 className={`
-                    h-9 w-9 transition-all duration-500
-                    ${isActive ? "text-primary drop-shadow-[0_2px_4px_rgba(255,122,0,0.3)]" : "text-[#1A1A3D] opacity-90"}
+                    h-8 w-8 transition-all duration-500
+                    ${isActive ? "text-white" : "text-[#7D7D9F] group-hover:text-primary"}
                 `} 
-                strokeWidth={2}
+                strokeWidth={2.5}
             />
         </div>
       </div>
       <span 
         className={`
-          text-[11px] font-black uppercase tracking-[0.1em] transition-all duration-500 mt-1
-          ${isActive ? "text-primary scale-105" : "text-[#1A1A3D] opacity-60"}
+          text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500
+          ${isActive ? "text-primary italic" : "text-[#7D7D9F] group-hover:text-white"}
         `}
       >
         {label}
