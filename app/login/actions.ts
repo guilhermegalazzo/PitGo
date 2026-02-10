@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
+  if (!supabase) return { error: "Supabase not configured locally/on server" }
 
   const data = {
     email: formData.get('email') as string,
@@ -24,6 +25,7 @@ export async function login(formData: FormData) {
 
 export async function signup(formData: FormData) {
   const supabase = await createClient()
+  if (!supabase) return { error: "Supabase not configured locally/on server" }
 
   const data = {
     email: formData.get('email') as string,

@@ -13,6 +13,9 @@ const getStripe = () => {
 export async function createCheckoutSession(orderId: string, amount: number, shopName: string) {
   const stripe = getStripe();
   const supabase = await createClient();
+  
+  if (!supabase) throw new Error("Supabase is not configured.");
+  
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) throw new Error("Unauthorized");

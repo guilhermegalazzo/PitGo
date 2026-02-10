@@ -37,16 +37,21 @@ export async function POST(req: Request) {
 
       if (orderId) {
         const supabase = await createClient();
-        const { error } = await supabase
-          .from("orders")
-          .update({ status: "confirmed" })
-          .eq("id", orderId);
+        if (supabase) {
+            const { error } = await supabase
+              .from("orders")
+              .update({ status: "confirmed" })
+              .eq("id", orderId);
 
-        if (error) {
-          console.error("Error updating order status:", error);
-          return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
+            if (error) {
+              console.error("Error updating order status:", error);
+              return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
+            }
+            console.log(`Order ${orderId} fully paid and confirmed!`);
+        } else {
+            console.error("Webhook Error: Supabase client could not be initialized.");
+            return NextResponse.json({ error: "Configuration Error" }, { status: 500 });
         }
-        console.log(`Order ${orderId} fully paid and confirmed!`);
       }
       break;
     default:
