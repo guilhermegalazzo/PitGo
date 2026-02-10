@@ -4,16 +4,16 @@ export function Logo({ className = "h-8" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <div className="relative flex items-center justify-center">
-        {/* The Aura / Glow Effect */}
-        <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 animate-pulse" />
+        {/* White Aura / Glow Effect */}
+        <div className="absolute inset-0 bg-white/30 blur-xl rounded-full scale-150 animate-pulse" />
         
         <svg
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-auto relative z-10 opacity-70 transition-opacity hover:opacity-100"
+          className="h-8 w-auto relative z-10 opacity-90 transition-opacity hover:opacity-100"
           style={{ 
-            filter: 'drop-shadow(0 0 8px rgba(255, 122, 0, 0.6))'
+            filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))'
           }}
         >
           {/* Hexagonal Nut Shape - Deep Purple */}
